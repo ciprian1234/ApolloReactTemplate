@@ -1,33 +1,44 @@
 import express from 'express';
-import { ApolloServer, gql } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
+import mongoose from 'mongoose'
 
 // my imports
-import { typeDefs, resolvers } from './schema';
+import { typeDefs } from './graphql/typedefs';
+import { resolvers } from './graphql/resolvers';
 
 
 // Config
 const PORT = process.env.PORT || 3000;
 
 
-// create the server 
-const app = express();
+// Start the server
+startServer();
 
 
-// configuration of apollo
-const server = new ApolloServer({ typeDefs, resolvers });
+async function startServer() {
+    // create express server 
+    const app = express();
 
+    // connect to mongoDB
+    await mongoose.connect('mongodb://localhost:27017/test', {
+        useNewUrlParser: true, 
+        useUnifiedTopology: true 
+    });
 
-// server middleware
-app.use(cors()) // allow cross origin resource sharing
-server.applyMiddleware({ app });
+    // configuration of apollo
+    const server = new ApolloServer({ typeDefs, resolvers });
 
+    // server middleware
+    app.use(cors()) // allow cross origin resource sharing
+    server.applyMiddleware({ app });
 
-// define routes
-app.get('/', (req, resp) => resp.send("Hellow"));
+    // define routes
+    app.get('/', (req, resp) => resp.send("Hellow"));
 
+    // start the server
+    app.listen(PORT, () => console.log(`Server is listening at port: ${PORT}!`))
+} 
 
-// start the server
-app.listen(PORT, () => console.log(`Server is listening at port: ${PORT}!`))
 
 
