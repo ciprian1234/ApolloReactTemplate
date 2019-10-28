@@ -1,15 +1,14 @@
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
+import bodyParser from 'body-parser';
+import session from 'express-session';
 import mongoose from 'mongoose'
 
 // my imports
+import { CONFIG } from './config';
 import { typeDefs } from './graphql/typedefs';
 import { resolvers } from './graphql/resolvers';
-
-
-// Config
-const PORT = process.env.PORT || 3000;
 
 
 // Start the server
@@ -27,17 +26,38 @@ async function startServer() {
     });
 
     // configuration of apollo
-    const server = new ApolloServer({ typeDefs, resolvers });
+    const server = new ApolloServer({ 
+        typeDefs, 
+        resolvers,
+        playground: !CONFIG.IN_PROD,
+        context: ({req, res}) => {return {req, res};}
+    });
 
     // server middleware
     app.use(cors()) // allow cross origin resource sharing
+    app.use(bodyParser.json()) // parse the body of all POST requests
+    app.use(session({
+        // TODO: store session to redis database
+        name:   CONFIG.SESSION_NAME,
+        secret: CONFIG.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: CONFIG.SESSION_LIFETIME,
+            sameSite: true,
+            secure: CONFIG.IN_PROD
+        }
+    }))
+     
+    // apply apollo middleware
     server.applyMiddleware({ app });
 
+
     // define routes
-    app.get('/', (req, resp) => resp.send("Hellow"));
+    app.get('/', (req, resp) => resp.send("<h1>Hellow</h1>"));
 
     // start the server
-    app.listen(PORT, () => console.log(`Server is listening at port: ${PORT}!`))
+    app.listen(CONFIG.PORT, () => console.log(`Server is listening at port: ${CONFIG.PORT}!`))
 } 
 
 
