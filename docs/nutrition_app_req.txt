@@ -1,0 +1,38 @@
+############################### Pages ###############################
+1. [Home page]:
+- overview nutrition plan 	 - (Overview on how much food I have consumed today, grams and percentages)
+- link to [Today page]    	 - (Detailed information about current day nutrition, add/remove food)
+- link to [Information page] - (toate informatiile pe care le-am colectat pana acum)
+- link to [Add food page]
+- link to [Register aliment page]
+
+
+2. [Add food page/inputform]:
+- aici se vor introduce informatiile despre ce mancare am cosumat/urmeaza sa consumam
+- input 1: username (autocomplete)
+- input 2: 
+		  - daca alimentul exista deja in baza de date trebuie sa introducem doar gramajul (autocomplete)
+		  - daca alimentul nu exista atunci apare un inputbox sa introducem manual F, P si C impreuna cu gramajul
+- input 3: data si ora vor fi salvate automat
+
+
+3. [Logs page]:
+- Detailed overview of nutrients consumed current day
+- overview on nutrients consumed previous days (dropdown to se detailed nutrients consumed, dropdown to se details on each user)
+- automaticaly group by date each inserted food item
+
+
+4. [Register aliment page/inputform]:
+- aliment name
+- optionaly add image
+- nutrient values per 100g: 
+fats, proteins, carbs
+minerals: calciu, magneziu, potasiu, sodiu
+vitamins:
+- price??? :D
+
+5. [Register User Plan page/inputform]:
+- insert username
+- insert user calories
+- insert user fat, proteins and carbs percentage
+- modify user plan (adjunts calories and nutrients percentages)
