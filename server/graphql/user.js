@@ -1,28 +1,54 @@
+import { gql } from 'apollo-server-express';
 import bcrypt from 'bcryptjs'
 import { AuthenticationError } from 'apollo-server-express'
 import { UserModel } from '../models/user'
 import * as Auth from '../auth'
 import { SESSION_NAME } from '../config'
 
-export const resolvers = {
+
+// TypeDefs
+const typeDefs = gql`
+  type User {
+    id: ID!
+    email: String
+    name: String
+    age: Int
+    gender: String
+  }
+
+  type Query {
+    me: User
+    getUsers: [User]
+  }
+
+  type Mutation {
+    registerUser(email: String!, password: String!, name: String, age: Int, gender: String): User
+    login(email: String!, password: String!): User
+    logout: Boolean
+  }
+`;
+
+
+
+// Resolver
+const resolvers = {
     
   Query: {
-    getUsers: (_, __, {req}) => { 
+    getUsers: (root, args, {req}, info) => {
       Auth.checkLoggedIn(req);
       return UserModel.find();
-     },
+    },
     
-    me: (_,__, {req}) => {
+    me: (root, args, {req}, info) => {
       Auth.checkLoggedIn(req);
       return UserModel.findById(req.session.userId);
     }
-
   },
 
-  Mutation: {
 
+  Mutation: {
     // Register User
-    registerUser: async (root, args, {req}, info ) => {
+    registerUser: async (root, args, {req}, info) => {
       // check if user is already loggedIn
       Auth.checkAlreadyLoggedIn(req);
       
@@ -66,10 +92,12 @@ export const resolvers = {
       req.session.destroy();
 
       // delete user cookie
-      res.clearCookie("login.sid" , {path: '/'});
+      res.clearCookie(SESSION_NAME , {path: '/'});
 
       return true;
     }
-  }
 
+  }
 };
+
+export default { typeDefs, resolvers }

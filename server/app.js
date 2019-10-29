@@ -1,14 +1,13 @@
 import express from 'express';
+import mongoose from 'mongoose'
 import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
 import session from 'express-session';
-import mongoose from 'mongoose'
+import bodyParser from 'body-parser';
 
 // my imports
 import { CONFIG } from './config';
-import { typeDefs } from './graphql/typedefs';
-import { resolvers } from './graphql/resolvers';
+import moduleList from './graphql/modules'
 
 
 // Start the server
@@ -27,8 +26,8 @@ async function startServer() {
 
     // configuration of apollo
     const server = new ApolloServer({ 
-        typeDefs, 
-        resolvers,
+        modules: moduleList,
+        debug: !CONFIG.IN_PROD,
         playground: !CONFIG.IN_PROD,
         context: ({req, res}) => {return {req, res};}
     });
