@@ -1,3 +1,3 @@
 ## Nutrition App
 
-Application descrition: TODO
+Descrition: TODO
