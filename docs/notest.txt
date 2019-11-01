@@ -1,0 +1,9 @@
+// if user is not logged in he can visit home page, food information, and recipes
+
+// if logged in see following:
+// your profile: edit profile settings, birth date, height, weight,
+// detailed info about current day
+// detailed info about other all others days
+// add costum items: exemplu, cartofi prajiti, bors,
+// add a table with different nutritive foods
+// info page: for each nutrient dropdown with top 10 with most rich aliments5 in that nutrient

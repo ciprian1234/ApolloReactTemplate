@@ -43,7 +43,7 @@ async function startServer() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: CONFIG.SESSION_LIFETIME,
+        maxAge: parseInt(CONFIG.SESSION_LIFETIME),
         sameSite: true,
         secure: CONFIG.IN_PROD
       }

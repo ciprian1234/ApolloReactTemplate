@@ -3,7 +3,7 @@ export const CONFIG = {
   IN_PROD: false,
 
   // application port
-  PORT: 3000,
+  PORT: 4000,
 
   // database connection info
   DB_HOST: "localhost",
