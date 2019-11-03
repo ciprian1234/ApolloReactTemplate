@@ -1,18 +1,25 @@
 import { gql } from "apollo-server-express";
 import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
+
 import { AuthenticationError } from "apollo-server-express";
-import { UserModel } from "../models/user";
+import UserModel from "../models/user";
 import * as Auth from "../auth";
-import { SESSION_NAME } from "../config";
+import { CONFIG } from "../config";
 
 // TypeDefs
 const typeDefs = gql`
+  type LoginResponse {
+    accessToken: String!
+  }
+
   type User {
     id: ID!
-    email: String
-    name: String
-    age: Int
+    email: String!
+    name: String!
     gender: String
+    birthDate: String
+    role: String
   }
 
   type Query {
@@ -25,10 +32,10 @@ const typeDefs = gql`
       email: String!
       password: String!
       name: String
-      age: Int
       gender: String
+      birthDate: String
     ): User
-    login(email: String!, password: String!): User
+    login(email: String!, password: String!): LoginResponse!
     logout: Boolean
   }
 `;
@@ -36,14 +43,14 @@ const typeDefs = gql`
 // Resolver
 const resolvers = {
   Query: {
-    getUsers: (root, args, { req }, info) => {
-      Auth.checkLoggedIn(req);
+    getUsers: async (root, args, { req }, info) => {
+      const user = await Auth.authenticate(req);
       return UserModel.find();
     },
 
-    me: (root, args, { req }, info) => {
-      Auth.checkLoggedIn(req);
-      return UserModel.findById(req.session.userId);
+    me: async (root, args, { req }, info) => {
+      const user = await Auth.authenticate(req);
+      return user;
     }
   },
 
@@ -51,50 +58,54 @@ const resolvers = {
     // Register User
     registerUser: async (root, args, { req }, info) => {
       // check if user is already loggedIn
-      Auth.checkAlreadyLoggedIn(req);
 
       // check if user already exists
       const user = await UserModel.findOne({ email: args.email });
-      if (user) return null; // TODO: throw error user already exists
+      if (user) throw new Error("Register error: email already exists!");
 
       // TODO: validate user data before registering
 
-      // hash the password
-      args.password = bcrypt.hashSync(args.password, 5);
+      // hash the password and generate a random tokenVersion
+      args.password = await bcrypt.hash(args.password, 5);
+      args.tokenVersion = randomBytes(9).toString("base64"); // generate a string of 12 chars
       return UserModel.create(args);
     },
 
     // Login
-    login: async (root, { email, password }, { req }, info) => {
-      // check if user is already loggedIn
-      Auth.checkAlreadyLoggedIn(req);
+    login: async (root, { email, password }, { res }, info) => {
+      // TODO: check if user is already loggedIn, if makes sense
 
       // check that user exists
       const user = await UserModel.findOne({ email });
       if (!user) {
-        throw new AuthenticationError("User does not exist!");
+        throw new AuthenticationError("Login error: user does not exist!");
       }
 
       // check if password match
       if (!bcrypt.compareSync(password, user.password)) {
-        throw new AuthenticationError("Invalid password!");
+        throw new AuthenticationError("Login error: invalid password!");
       }
 
-      // save session with user and send a cookie with session id
-      req.session.userId = user._id;
-      return user;
+      // save a refresh token as cookie on user browser
+      Auth.createRefreshTokenCookie(res, user);
+
+      // return access token
+      return {
+        accessToken: Auth.createAccessToken(user)
+      };
     },
 
     // Logout
-    logout: (root, args, { req, res }, info) => {
-      // user must be signed in
-      Auth.checkLoggedIn(req);
+    logout: async (root, args, { req, res }, info) => {
+      // update user tokenVersion => all current generated tokens will be invalidated
+      let user = await Auth.authenticate(req);
 
-      // delete user session
-      req.session.destroy();
+      await UserModel.findByIdAndUpdate(user.id, {
+        tokenVersion: randomBytes(9).toString("base64") // generate a string of 12 chars
+      });
 
       // delete user cookie
-      res.clearCookie(SESSION_NAME, { path: "/" });
+      res.clearCookie(CONFIG.JWT_REFRESH_COOKIE_NAME, { path: "/" });
 
       return true;
     }

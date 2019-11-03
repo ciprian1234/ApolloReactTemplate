@@ -2,11 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
-import session from "express-session";
+import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 
 // my imports
 import { CONFIG } from "./config";
+import { refreshTokens } from "./auth";
 import moduleList from "./graphql/modules";
 
 // Start the server
@@ -19,7 +20,9 @@ async function startServer() {
   // connect to mongoDB
   await mongoose.connect("mongodb://localhost:27017/test", {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+    useCreateIndex: true
   });
 
   // configuration of apollo
@@ -35,29 +38,16 @@ async function startServer() {
   // server middleware
   app.use(cors()); // allow cross origin resource sharing
   app.use(bodyParser.json()); // parse the body of all POST requests
-  app.use(
-    session({
-      // TODO: store session to redis database
-      name: CONFIG.SESSION_NAME,
-      secret: CONFIG.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: parseInt(CONFIG.SESSION_LIFETIME),
-        sameSite: true,
-        secure: CONFIG.IN_PROD
-      }
-    })
-  );
-
+  app.use(cookieParser());
   // apply apollo middleware
   server.applyMiddleware({ app });
 
   // define routes
   app.get("/", (req, resp) => resp.send("<h1>Hellow</h1>"));
+  app.post("/refresh_tokens", refreshTokens);
 
   // start the server
   app.listen(CONFIG.PORT, () =>
-    console.log(`Server is listening at port: ${CONFIG.PORT}!`)
+    console.log(`Server is listening at: http://localhost:${CONFIG.PORT}/`)
   );
 }
