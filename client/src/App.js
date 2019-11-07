@@ -2,19 +2,23 @@ import React, { useState } from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './App.css';
 
+// import UserContext
+import { UserContext } from './context';
+
+// import pages
+import { Home } from './pages/Home';
+import { About } from './pages/About';
+import { Info } from './pages/Info';
+import { Recipes } from './pages/Recipes';
+import { Login } from './pages/Login';
+import { Register } from './pages/Register';
+import { Profile } from './pages/Profile';
+
+//import componenets
 import { MainNavbar } from './components/MainNavbar';
-import { Register } from './pages/register';
-
-const Home = () => <h1>Home</h1>;
-const Info = () => <h1>Food info</h1>;
-const Recipes = () => <h1>Food recipes</h1>;
-const About = () => <h1>About</h1>;
-
-// user context
-const UserContext = React.createContext();
 
 const App = () => {
-	const [user, setUser] = useState({});
+	const [user, setUser] = useState(null);
 
 	return (
 		<BrowserRouter>
@@ -30,9 +34,9 @@ const App = () => {
 						<Route path="/recipes" component={Recipes} />
 						<Route path="/about" component={About} exact />
 						<Route path="/register" component={Register} exact />
-						<Route path="/login" component={null} exact />
+						<Route path="/login" component={Login} exact />
 						<Route path="/statistics" component={null} exact />
-						<Route path="/profile" component={null} exact />
+						<Route path="/profile" component={Profile} exact />
 						<Route path="/" component={() => <h2>404 Page not found!</h2>} />
 					</Switch>
 				</main>

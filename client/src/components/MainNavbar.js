@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
-export const MainNavbar = (props) => {
+export const MainNavbar = function(props) {
 	const pages = [
 		{
 			link: '/info',
@@ -25,9 +25,9 @@ export const MainNavbar = (props) => {
 		}
 	];
 
-	// create componenets
-	const items_jsx = pages.map((item) => (
-		<li>
+	// create pages links
+	const items_jsx = pages.map((item, idx) => (
+		<li key={idx}>
 			<NavLink to={item.link}>{item.text}</NavLink>
 		</li>
 	));
@@ -37,11 +37,11 @@ export const MainNavbar = (props) => {
 			<NavLink to="/" className="brand-logo">
 				Nutrition App
 			</NavLink>
-			<NavLink to="#" class="sidenav-trigger" data-target="mobile-links">
-				<i class="material-icons">menu</i>
+			<NavLink to="#" className="sidenav-trigger" data-target="mobile-links">
+				<i className="material-icons">menu</i>
 			</NavLink>
 
-			<ul id="nav-mobile" class="right hide-on-med-and-down">
+			<ul id="nav-mobile" className="right hide-on-med-and-down">
 				{items_jsx}
 
 				<li>
