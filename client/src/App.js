@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import './App.css';
 
@@ -16,9 +16,16 @@ import { Profile } from './pages/Profile';
 
 //import componenets
 import { MainNavbar } from './components/MainNavbar';
+import * as Auth from './auth';
 
 const App = () => {
-	const [user, setUser] = useState(null);
+	const [user, setUser] = React.useState(null);
+	const [loading, setLoading] = React.useState(true); // user global context
+
+	// send a request to refresh access token before rendering the app
+	Auth.useRefreshTokensEffect(setLoading);
+
+	if (loading) return <p>Loading...</p>; //TODO: Loading animation
 
 	return (
 		<BrowserRouter>

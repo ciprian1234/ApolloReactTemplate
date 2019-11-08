@@ -2,37 +2,14 @@ import React, { useState } from 'react';
 import { gql } from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 
+// my imports
 import { useFormInput } from '../costumHooks';
-
-// const REGISTER_MUTATION = gql`
-// 	mutation registerUser(
-// 		$email: String!
-// 		$password: String!
-// 		$name: String
-// 		$gender: String
-// 		$birthDate: String
-// 	) {
-// 		registerUser(
-// 			email: $email
-// 			password: $password
-// 			name: $name
-// 			gender: $gender
-// 			birthDate: $birthDate
-// 		) {
-// 			id
-// 			email
-// 			password
-// 			name
-// 			gender
-// 			birthDate
-// 		}
-// 	}
-// `;
+import * as MUTATIONS from '../graphql/mutations';
 
 export const Register = (props) => {
 	const email = useFormInput('email', 'text', '');
 	const password = useFormInput('password', 'password', '');
-	// const [registerUser, { data, loading, error }] = useMutation(REGISTER_MUTATION);
+	// const [registerUser, { data, loading, error }] = useMutation(MUTATIONS.REGISTER);
 
 	const handleSubmit = function(event) {
 		event.preventDefault();

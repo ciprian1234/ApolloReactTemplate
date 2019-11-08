@@ -1,38 +1,39 @@
 import React, { useState, useContext } from 'react';
-import gql from 'graphql-tag';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
+
+// my imports
+import * as Auth from '../auth';
 import { UserContext } from '../context';
 import { useFormInput } from '../costumHooks';
-
-const ME_QUERY = gql`
-	query {
-		me {
-			id
-			email
-			name
-			gender
-			birthDate
-			role
-		}
-	}
-`;
+import * as QUERIES from '../graphql/queries';
+import * as MUTATIONS from '../graphql/mutations';
 
 export const Login = (props) => {
 	const userContext = useContext(UserContext);
-	const [loggedIn, setLoggedIn] = useState(false);
-	const { loading, data, error } = useQuery(ME_QUERY);
+	const [loginMutation, { data, loading, error }] = useMutation(MUTATIONS.LOGIN);
 	// console.log(loading, data, error);
 
-	if (loggedIn) {
+	if (loading) {
+		//TODO: add loading animation
+		return <p>Loading...</p>;
+	}
+
+	if (data) {
+		Auth.setAccessToken(data.login.accessToken);
+		return <p>You succesfully logged in! (Redirecting...) TODO </p>;
+	}
+
+	if (error) {
+		Auth.setAccessToken('');
 		return (
 			<div>
-				{loading ? <p>Loading...</p> : null}
-				{data ? <p>{JSON.stringify(data)}</p> : null}
-				{error ? <p className="error">{error.message}</p> : null}
+				<LoginForm args={{ loginMutation }} />
+				<p>{error.message}</p>
 			</div>
 		);
 	}
-	return <LoginForm />;
+
+	return <LoginForm args={{ loginMutation }} />;
 };
 
 // login form
@@ -43,6 +44,13 @@ const LoginForm = function(props) {
 	const handleSubmit = function(event) {
 		event.preventDefault();
 		// call the query
+		props.args.loginMutation({
+			variables: {
+				email: email.value,
+				password: password.value
+			}
+		});
+		// reset the fields
 		email.onChange({ target: { value: '' } }); // by default is called with: event.target.value
 		password.onChange({ target: { value: '' } }); // by default is called with: event.target.value
 	};
