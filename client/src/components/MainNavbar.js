@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Link, NavLink, useHistory, Redirect } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 
 import * as Auth from '../auth';
 import { UserContext } from '../context';
@@ -96,7 +96,7 @@ async function handleLogout(history, userContext) {
 		},
 		body: JSON.stringify(logout_mutation)
 	});
-	let data = await response.json();
+	await response.json();
 	// userContext.setUser(null);
 	Auth.setAccessToken('');
 	history.push('/');

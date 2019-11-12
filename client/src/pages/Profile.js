@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import { useQuery } from '@apollo/react-hooks';
 
 //my imports

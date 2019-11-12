@@ -1,16 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
 
 // my imports
 import * as Auth from '../auth';
-import { UserContext } from '../context';
 import { useFormInput } from '../costumHooks';
-import * as QUERIES from '../graphql/queries';
 import * as MUTATIONS from '../graphql/mutations';
 
 export const Login = (props) => {
-	const userContext = useContext(UserContext);
 	const [loginMutation, { data, loading, error }] = useMutation(MUTATIONS.LOGIN);
 	// console.log(loading, data, error);
 

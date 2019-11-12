@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { gql } from 'graphql-tag';
+import React from 'react';
 import { useMutation } from '@apollo/react-hooks';
 
 // my imports
@@ -9,6 +8,9 @@ import * as MUTATIONS from '../graphql/mutations';
 export const Register = (props) => {
 	const email = useFormInput('email', 'text', '');
 	const password = useFormInput('password', 'password', '');
+	// const repeatPassword = useFormInput('repeatPassword', 'password', '');
+	// const name = useFormInput('name', 'text', '');
+
 	// const [registerUser, { data, loading, error }] = useMutation(MUTATIONS.REGISTER);
 
 	const handleSubmit = function(event) {
@@ -22,8 +24,6 @@ export const Register = (props) => {
 		// 		birthDate: '10-03-1995'
 		// 	}
 		// });
-		email.onChange({ target: { value: '' } }); // by default is called with: event.target.value
-		password.onChange({ target: { value: '' } }); // by default is called with: event.target.value
 	};
 
 	return (
