@@ -4,6 +4,7 @@ import './App.css';
 
 // import UserContext
 import { UserContext } from './context';
+import { PrivateRoute } from './components/PrivateRoute';
 
 // import pages
 import { Home } from './pages/Home';
@@ -12,6 +13,7 @@ import { Info } from './pages/Info';
 import { Recipes } from './pages/Recipes';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Statistics } from './pages/Statistics';
 import { Profile } from './pages/Profile';
 
 //import componenets
@@ -19,8 +21,8 @@ import { MainNavbar } from './components/MainNavbar';
 import * as Auth from './auth';
 
 const App = () => {
-	const [user, setUser] = React.useState(null);
-	const [loading, setLoading] = React.useState(true); // user global context
+	const [user, setUser] = React.useState(null); // user global context
+	const [loading, setLoading] = React.useState(true);
 
 	// send a request to refresh access token before rendering the app
 	Auth.useRefreshTokensEffect(setLoading);
@@ -29,21 +31,21 @@ const App = () => {
 
 	return (
 		<BrowserRouter>
-			<UserContext.Provider value={user}>
+			<UserContext.Provider value={{ user, setUser }}>
 				<header className="header">
 					<MainNavbar />
 				</header>
 				<div className="menu">Sidebar</div>
 				<main className="content">
 					<Switch>
-						<Route path="/" component={Home} exact />
-						<Route path="/info" component={Info} exact />
-						<Route path="/recipes" component={Recipes} />
-						<Route path="/about" component={About} exact />
-						<Route path="/register" component={Register} exact />
-						<Route path="/login" component={Login} exact />
-						<Route path="/statistics" component={null} exact />
-						<Route path="/profile" component={Profile} exact />
+						<Route exact path="/" component={Home} />
+						<Route exact path="/info" component={Info} />
+						<Route exact path="/recipes" component={Recipes} />
+						<Route exact path="/about" component={About} />
+						<Route exact path="/register" component={Register} />
+						<Route exact path="/login" component={Login} />
+						<PrivateRoute exact path="/statistics" component={Statistics} />
+						<PrivateRoute exact path="/profile" component={Profile} />
 						<Route path="/" component={() => <h2>404 Page not found!</h2>} />
 					</Switch>
 				</main>

@@ -28,14 +28,14 @@ const refreshTokenMiddleware = new TokenRefreshLink({
 	accessTokenField: 'accessToken',
 	isTokenValidOrUndefined: function() {
 		const token = Auth.getAccessToken();
-		if (!token) return false;
+		if (!token) return true;
 		try {
 			const { exp } = jwtDecode(token);
 			if (Date.now >= exp * 1000) return false;
+			return true;
 		} catch {
 			return false;
 		}
-		return false;
 	},
 	fetchAccessToken: function() {
 		return fetch('http://localhost:4000/refresh_tokens', {
@@ -47,7 +47,7 @@ const refreshTokenMiddleware = new TokenRefreshLink({
 		Auth.setAccessToken(token);
 	},
 	handleError: function(err) {
-		console.log('Error from refreshTokenMiddleware!');
+		console.log('Error from refreshTokenMiddleware!:', err.message);
 	}
 });
 

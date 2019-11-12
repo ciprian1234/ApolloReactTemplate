@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { Redirect } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
 
 // my imports
@@ -20,7 +21,7 @@ export const Login = (props) => {
 
 	if (data) {
 		Auth.setAccessToken(data.login.accessToken);
-		return <p>You succesfully logged in! (Redirecting...) TODO </p>;
+		return <Redirect to={{ pathname: '/', state: { from: props.location } }} />;
 	}
 
 	if (error) {
@@ -50,9 +51,6 @@ const LoginForm = function(props) {
 				password: password.value
 			}
 		});
-		// reset the fields
-		email.onChange({ target: { value: '' } }); // by default is called with: event.target.value
-		password.onChange({ target: { value: '' } }); // by default is called with: event.target.value
 	};
 
 	return (
